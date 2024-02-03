@@ -27,16 +27,21 @@ def get_session_property(request, property_name) -> str | None:
 
     return request.session.get(property_name)
 
-def is_mobile(request) -> bool:
+def get_client(request) -> str:
     """
-    Check if the request is from a mobile device.
+    Get the client type - Android, iOS, or web.
 
     :param request: The request object.
-    :return: True if the request is from a mobile device, False otherwise.
+    :return: "android", "iOS", or "web".
     """
 
     user_agent: str = request.META['HTTP_USER_AGENT'].lower() or ''
-    return 'android' in user_agent.lower() or 'iphone' in user_agent.lower()
+    if 'android' in user_agent:
+        return "android"
+    elif 'iphone' in user_agent:
+        return "iOS"
+    else:
+        return "web"
 
 
 

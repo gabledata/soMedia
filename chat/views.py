@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 from accounts.models import UserProfile
 
-from soMedia.utils.event_tracking import get_device_id, send_analytics_payload, get_session_property, is_mobile
+from soMedia.utils.event_tracking import get_device_id, send_analytics_payload, get_session_property, get_client
 
 from .forms import CommentForm, PostForm
 from .models import Post
@@ -35,7 +35,7 @@ def home(request):
         "ip_address": request.get_host(),
         "path": request.get_full_path(),
         "is_secure": request.is_secure(),
-        "is_mobile": is_mobile(request),
+        "client": get_client(request),
         "language": "en-us",
         "username": user_profile.user.username,
         "user_website": user_profile.website,
@@ -75,7 +75,7 @@ def add_post(request):
                 "ip_address": request.get_host(),
                 "path": request.get_full_path(),
                 "is_secure": request.is_secure(),
-                "is_mobile": is_mobile(request),
+                "client": get_client(request),
                 "language": "en-us",
                 "username": user_profile.user.username,
                 "user_website": user_profile.website,
@@ -111,7 +111,7 @@ def add_comment(request, post_id):
             "ip_address": request.get_host(),
             "path": request.get_full_path(),
             "is_secure": request.is_secure(),
-            "is_mobile": is_mobile(request),
+            "client": get_client(request),
             "language": "en-us",
             "username": user_profile.user.username,
             "user_website": user_profile.website,
