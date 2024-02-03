@@ -42,3 +42,13 @@ def is_mobile(request) -> bool:
 
 def send_event_to_kafka(event):
     pass
+
+def get_device_id(user) -> uuid.UUID:
+    """
+    Get the device id for the user.
+
+    :param user: The user object.
+    :return: The device id.
+    """
+
+    return uuid.uuid4()

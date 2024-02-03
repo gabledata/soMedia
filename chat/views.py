@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 from accounts.models import UserProfile
 
-from soMedia.utils.event_tracking import send_analytics_payload, get_session_property, is_mobile
+from soMedia.utils.event_tracking import get_device_id, send_analytics_payload, get_session_property, is_mobile
 
 from .forms import CommentForm, PostForm
 from .models import Post
@@ -30,8 +30,7 @@ def home(request):
         "_source": "soMedia.web_backend",
         "_uuid": uuid.uuid4(),
         "_version": "0.3.0",
-        "device_id": uuid.uuid4(),
-        "event_timestamp": datetime.now(),
+        "device_id": get_device_id(user_profile),
         "session_id": get_session_property(request, "session_id"),
         "ip_address": request.get_host(),
         "path": request.get_full_path(),
@@ -71,8 +70,7 @@ def add_post(request):
                 "_source": "soMedia.web_backend",
                 "_uuid": uuid.uuid4(),
                 "_version": "0.3.0",
-                "device_id": uuid.uuid4(),
-                "event_timestamp": datetime.now(),
+                "device_id": get_device_id(user_profile),
                 "session_id": get_session_property(request, "session_id"),
                 "ip_address": request.get_host(),
                 "path": request.get_full_path(),
@@ -108,8 +106,7 @@ def add_comment(request, post_id):
             "_source": "soMedia.web_backend",
             "_uuid": uuid.uuid4(),
             "_version": "0.3.0",
-            "device_id": uuid.uuid4(),
-            "event_timestamp": datetime.now(),
+            "device_id": get_device_id(user_profile),
             "session_id": get_session_property(request, "session_id"),
             "ip_address": request.get_host(),
             "path": request.get_full_path(),

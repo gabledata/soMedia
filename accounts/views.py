@@ -6,7 +6,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.http import HttpRequest
 
-from soMedia.utils.event_tracking import send_analytics_payload, get_session_property, is_mobile
+from soMedia.utils.event_tracking import get_device_id, send_analytics_payload, get_session_property, is_mobile
 
 from .forms import ProfileForm, RegistrationForm
 from .models import UserProfile
@@ -29,21 +29,21 @@ def register(request: HttpRequest):
             new_user = authenticate(
                 username=request.POST["username"], password=request.POST["password1"]
             )
-            user_profile = UserProfile.objects.get_or_create(user=request.user)
+            user_profile, created = UserProfile.objects.get_or_create(user=request.user)
             send_analytics_payload({
                 "_type": "register",
                 "_dt": datetime.now(),
                 "_source": "soMedia.web_backend",
                 "_uuid": uuid.uuid4(),
                 "_version": "0.3.0",
-                "device_id": uuid.uuid4(),
-                "event_timestamp": datetime.now(),
+                "device_id": get_device_id(user_profile),
                 "session_id": get_session_property(request, "session_id"),
                 "ip_address": request.get_host(),
                 "path": request.get_full_path(),
                 "is_secure": request.is_secure(),
                 "is_mobile": is_mobile(request),
                 "language": "en-us",
+                "account_created": created,
                 "username": user_profile.user.username,
                 "user_website": user_profile.website,
                 "user_bio": user_profile.bio,
@@ -74,8 +74,7 @@ def profile(request: HttpRequest, username):
                 "_source": "soMedia.web_backend",
                 "_uuid": uuid.uuid4(),
                 "_version": "0.3.0",
-                "device_id": uuid.uuid4(),
-                "event_timestamp": datetime.now(),
+                "device_id": get_device_id(user_profile),
                 "session_id": get_session_property(request, "session_id"),
                 "ip_address": request.get_host(),
                 "path": request.get_full_path(),
@@ -113,8 +112,7 @@ def edit_profile(request: HttpRequest):
                 "_source": "soMedia.web_backend",
                 "_uuid": uuid.uuid4(),
                 "_version": "0.3.0",
-                "device_id": uuid.uuid4(),
-                "event_timestamp": datetime.now(),
+                "device_id": get_device_id(user_profile),
                 "session_id": get_session_property(request, "session_id"),
                 "ip_address": request.get_host(),
                 "path": request.get_full_path(),
@@ -153,13 +151,9 @@ def followers(request: HttpRequest):
         "_source": "soMedia.web_backend",
         "_uuid": uuid.uuid4(),
         "_version": "0.3.0",
-        "device_id": uuid.uuid4(),
-        "event_timestamp": datetime.now(),
-        "session_id": get_session_property(request, "session_id"),
+        "device_id": get_device_id(user_profile),
         "ip_address": request.get_host(),
         "path": request.get_full_path(),
-        "is_secure": request.is_secure(),
-        "is_mobile": is_mobile(request),
         "language": "en-us",
         "username": user_profile.user.username,
         "user_website": user_profile.website,
@@ -186,8 +180,7 @@ def follow(request: HttpRequest, username):
         "_source": "soMedia.web_backend",
         "_uuid": uuid.uuid4(),
         "_version": "0.3.0",
-        "device_id": uuid.uuid4(),
-        "event_timestamp": datetime.now(),
+        "device_id": get_device_id(user_profile),
         "session_id": get_session_property(request, "session_id"),
         "ip_address": request.get_host(),
         "path": request.get_full_path(),
@@ -214,8 +207,7 @@ def unfollow(request: HttpRequest, username):
                 "_source": "soMedia.web_backend",
                 "_uuid": uuid.uuid4(),
                 "_version": "0.3.0",
-                "device_id": uuid.uuid4(),
-                "event_timestamp": datetime.now(),
+                "device_id": get_device_id(user_profile),
                 "session_id": get_session_property(request, "session_id"),
                 "ip_address": request.get_host(),
                 "path": request.get_full_path(),
