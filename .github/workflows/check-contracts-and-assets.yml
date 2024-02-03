@@ -1,0 +1,36 @@
+name: Gable Check Data Assets
+run-name: ${{ github.actor }} - Gable Check Data Assets
+on: pull_request
+permissions:
+  # Required to checkout the data assets from the repo
+  contents: read
+  # Required to post messages to the PR
+  pull-requests: write
+jobs:
+  check-data-assets:
+    runs-on: ubuntu-latest
+    name: 'Check Data Assets'
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+            python-version: 3.10.11
+      - name: Check Python Data Assets
+        uses: gabledata/cicd/github-actions/check-data-assets@latest
+        with:
+            allow-gable-pre-release: true
+            # Provide API key secret, and endpoint variable created in previous steps
+            gable-api-key: ${{secrets.DEMO_GABLE_API_KEY}}
+            gable-api-endpoint: ${{secrets.DEMO_GABLE_API_ENDPOINT}}
+            # List of paths to Avro files that should be checked with support for glob syntax. 
+            # Can either be specified as a space separated list ('event1.proto event2.proto'), or 
+            # a multiline string
+            data-asset-options: |
+                --source-type python \
+                --project-root . \
+                --emitter-file-path soMedia/utils/event_tracking.py \
+                --emitter-function send_analytics_payload \
+                --emitter-payload-parameter payload \
+                --event-name-key _type
