@@ -33,4 +33,4 @@ jobs:
                 --emitter-file-path soMedia/utils/event_tracking.py \
                 --emitter-function send_analytics_payload \
                 --emitter-payload-parameter payload \
-                --event-name-key _type
+                --event-name-key "tracks.[*]._type"

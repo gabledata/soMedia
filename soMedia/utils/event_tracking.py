@@ -1,9 +1,10 @@
 from datetime import datetime
 import uuid
 from accounts.models import UserProfile
+from typing import Dict, List
 
 
-def send_analytics_payload(payload):
+def send_analytics_payload(payload: Dict[str, List]):
     """
     A stub function to send analytics payload.
 
