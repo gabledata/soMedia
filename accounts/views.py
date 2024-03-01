@@ -6,7 +6,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.http import HttpRequest
 
-from soMedia.utils.event_tracking import get_device_id, send_analytics_payload, get_session_property, is_mobile
+from soMedia.utils.event_tracking import get_device_id, send_analytics_payload, get_session_property, is_mobile, get_client
 
 from .forms import ProfileForm, RegistrationForm
 from .models import UserProfile
@@ -42,7 +42,7 @@ def register(request: HttpRequest):
                     "ip_address": request.get_host(),
                     "path": request.get_full_path(),
                     "is_secure": request.is_secure(),
-                    "is_mobile": is_mobile(request),
+                    "get_client": get_client(request),
                     "language": "en-us",
                     "account_created": created,
                     "username": user_profile.user.username,
