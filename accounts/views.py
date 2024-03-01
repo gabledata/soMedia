@@ -6,7 +6,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.http import HttpRequest
 
-from soMedia.utils.event_tracking import get_device_id, send_analytics_payload, get_session_property, get_client
+from soMedia.utils.event_tracking import get_device_id, send_analytics_payload, get_session_property, is_mobile
 
 from .forms import ProfileForm, RegistrationForm
 from .models import UserProfile
@@ -31,25 +31,26 @@ def register(request: HttpRequest):
             )
             user_profile, created = UserProfile.objects.get_or_create(user=request.user)
             send_analytics_payload({
-                "_type": "register",
-                "_dt": datetime.now(),
-                "_source": "soMedia.web_backend",
-                "_uuid": uuid.uuid4(),
-                "_version": "0.3.0",
-                "device_id": get_device_id(user_profile),
-                "session_id": get_session_property(request, "session_id"),
-                "ip_address": request.get_host(),
-                "path": request.get_full_path(),
-                "is_secure": request.is_secure(),
-                "client": get_client(request),
-                "language": "en-us",
-                "account_created": created,
-                "username": user_profile.user.username,
-                "user_website": user_profile.website,
-                "user_bio": user_profile.bio,
-                "user_phone": user_profile.phone,
-                "user_address": user_profile.address,
-            })
+                "tracks": [{
+                    "_type": "register",
+                    "_dt": datetime.now(),
+                    "_source": "soMedia.web_backend",
+                    "_uuid": uuid.uuid4(),
+                    "_version": "0.3.0",
+                    "device_id": get_device_id(user_profile),
+                    "session_id": get_session_property(request, "session_id"),
+                    "ip_address": request.get_host(),
+                    "path": request.get_full_path(),
+                    "is_secure": request.is_secure(),
+                    "is_mobile": is_mobile(request),
+                    "language": "en-us",
+                    "account_created": created,
+                    "username": user_profile.user.username,
+                    "user_website": user_profile.website,
+                    "user_bio": user_profile.bio,
+                    "user_phone": user_profile.phone,
+                    "user_address": user_profile.address,
+            }]})
 
             # authenticate and log user in, then redirect to newsFeeds
             login(request, new_user)
@@ -69,24 +70,25 @@ def profile(request: HttpRequest, username):
     is_following = request.user.is_following(user)
     user_profile = UserProfile.objects.get(user=user)
     send_analytics_payload({
-                "_type": "view_profile",
-                "_dt": datetime.now(),
-                "_source": "soMedia.web_backend",
-                "_uuid": uuid.uuid4(),
-                "_version": "0.3.0",
-                "device_id": get_device_id(user_profile),
-                "session_id": get_session_property(request, "session_id"),
-                "ip_address": request.get_host(),
-                "path": request.get_full_path(),
-                "is_secure": request.is_secure(),
-                "client": get_client(request),
-                "language": "en-us",
-                "username": user_profile.user.username,
-                "user_website": user_profile.website,
-                "user_bio": user_profile.bio,
-                "user_phone": user_profile.phone,
-                "user_address": user_profile.address,
-            })
+        "tracks": [{
+            "_type": "view_profile",
+            "_dt": datetime.now(),
+            "_source": "soMedia.web_backend",
+            "_uuid": uuid.uuid4(),
+            "_version": "0.3.0",
+            "device_id": get_device_id(user_profile),
+            "session_id": get_session_property(request, "session_id"),
+            "ip_address": request.get_host(),
+            "path": request.get_full_path(),
+            "is_secure": request.is_secure(),
+            "is_mobile": is_mobile(request),
+            "language": "en-us",
+            "username": user_profile.user.username,
+            "user_website": user_profile.website,
+            "user_bio": user_profile.bio,
+            "user_phone": user_profile.phone,
+            "user_address": user_profile.address,
+        }]})
     
     return render(
         request,
@@ -107,24 +109,25 @@ def edit_profile(request: HttpRequest):
             form.save()
             user_profile = UserProfile.objects.get(user=request.user)
             send_analytics_payload({
-                "_type": "edit_profile",
-                "_dt": datetime.now(),
-                "_source": "soMedia.web_backend",
-                "_uuid": uuid.uuid4(),
-                "_version": "0.3.0",
-                "device_id": get_device_id(user_profile),
-                "session_id": get_session_property(request, "session_id"),
-                "ip_address": request.get_host(),
-                "path": request.get_full_path(),
-                "is_secure": request.is_secure(),
-                "client": get_client(request),
-                "language": "en-us",
-                "username": user_profile.user.username,
-                "user_website": user_profile.website,
-                "user_bio": user_profile.bio,
-                "user_phone": user_profile.phone,
-                "user_address": user_profile.address,
-            })
+                "tracks": [{
+                    "_type": "edit_profile",
+                    "_dt": datetime.now(),
+                    "_source": "soMedia.web_backend",
+                    "_uuid": uuid.uuid4(),
+                    "_version": "0.3.0",
+                    "device_id": get_device_id(user_profile),
+                    "session_id": get_session_property(request, "session_id"),
+                    "ip_address": request.get_host(),
+                    "path": request.get_full_path(),
+                    "is_secure": request.is_secure(),
+                    "is_mobile": is_mobile(request),
+                    "language": "en-us",
+                    "username": user_profile.user.username,
+                    "user_website": user_profile.website,
+                    "user_bio": user_profile.bio,
+                    "user_phone": user_profile.phone,
+                    "user_address": user_profile.address,
+            }]})
             return redirect(
                 reverse("accounts:view-profile", args=(request.user.username,))
             )
@@ -146,21 +149,22 @@ def followers(request: HttpRequest):
     )
     user_profile = UserProfile.objects.get(user=request.user)
     send_analytics_payload({
-        "_type": "get_followers",
-        "_dt": datetime.now(),
-        "_source": "soMedia.web_backend",
-        "_uuid": uuid.uuid4(),
-        "_version": "0.3.0",
-        "device_id": get_device_id(user_profile),
-        "ip_address": request.get_host(),
-        "path": request.get_full_path(),
-        "language": "en-us",
-        "username": user_profile.user.username,
-        "user_website": user_profile.website,
-        "user_bio": user_profile.bio,
-        "user_phone": user_profile.phone,
-        "user_address": user_profile.address,
-    })
+        "tracks": [{
+            "_type": "get_followers",
+            "_dt": datetime.now(),
+            "_source": "soMedia.web_backend",
+            "_uuid": uuid.uuid4(),
+            "_version": "0.3.0",
+            "device_id": get_device_id(user_profile),
+            "ip_address": request.get_host(),
+            "path": request.get_full_path(),
+            "language": "en-us",
+            "username": user_profile.user.username,
+            "user_website": user_profile.website,
+            "user_bio": user_profile.bio,
+            "user_phone": user_profile.phone,
+            "user_address": user_profile.address,
+    }]})
     return render(
         request,
         "accounts/followers.html",
@@ -175,24 +179,25 @@ def follow(request: HttpRequest, username):
     request.user.followers.add(User.objects.get(username=username))
     user_profile = UserProfile.objects.get(user=request.user)
     send_analytics_payload({
-        "_type": "follow_user",
-        "_dt": datetime.now(),
-        "_source": "soMedia.web_backend",
-        "_uuid": uuid.uuid4(),
-        "_version": "0.3.0",
-        "device_id": get_device_id(user_profile),
-        "session_id": get_session_property(request, "session_id"),
-        "ip_address": request.get_host(),
-        "path": request.get_full_path(),
-        "is_secure": request.is_secure(),
-        "client": get_client(request),
-        "language": "en-us",
-        "username": user_profile.user.username,
-        "user_website": user_profile.website,
-        "user_bio": user_profile.bio,
-        "user_phone": user_profile.phone,
-        "user_address": user_profile.address,
-    })
+        "tracks": [{
+            "_type": "follow_user",
+            "_dt": datetime.now(),
+            "_source": "soMedia.web_backend",
+            "_uuid": uuid.uuid4(),
+            "_version": "0.3.0",
+            "device_id": get_device_id(user_profile),
+            "session_id": get_session_property(request, "session_id"),
+            "ip_address": request.get_host(),
+            "path": request.get_full_path(),
+            "is_secure": request.is_secure(),
+            "is_mobile": is_mobile(request),
+            "language": "en-us",
+            "username": user_profile.user.username,
+            "user_website": user_profile.website,
+            "user_bio": user_profile.bio,
+            "user_phone": user_profile.phone,
+            "user_address": user_profile.address,
+    }]})
     return redirect("accounts:followers")
 
 
@@ -202,22 +207,23 @@ def unfollow(request: HttpRequest, username):
     request.user.followers.remove(User.objects.get(username=username))
     user_profile = UserProfile.objects.get(user=request.user)
     send_analytics_payload({
-                "_type": "unfollow_user",
-                "_dt": datetime.now(),
-                "_source": "soMedia.web_backend",
-                "_uuid": uuid.uuid4(),
-                "_version": "0.3.0",
-                "device_id": get_device_id(user_profile),
-                "session_id": get_session_property(request, "session_id"),
-                "ip_address": request.get_host(),
-                "path": request.get_full_path(),
-                "is_secure": request.is_secure(),
-                "client": get_client(request),
-                "language": "en-us",
-                "username": user_profile.user.username,
-                "user_website": user_profile.website,
-                "user_bio": user_profile.bio,
-                "user_phone": user_profile.phone,
-                "user_address": user_profile.address,
-            })
+        "tracks": [{
+            "_type": "unfollow_user",
+            "_dt": datetime.now(),
+            "_source": "soMedia.web_backend",
+            "_uuid": uuid.uuid4(),
+            "_version": "0.3.0",
+            "device_id": get_device_id(user_profile),
+            "session_id": get_session_property(request, "session_id"),
+            "ip_address": request.get_host(),
+            "path": request.get_full_path(),
+            "is_secure": request.is_secure(),
+            "is_mobile": is_mobile(request),
+            "language": "en-us",
+            "username": user_profile.user.username,
+            "user_website": user_profile.website,
+            "user_bio": user_profile.bio,
+            "user_phone": user_profile.phone,
+            "user_address": user_profile.address,
+        }]})
     return redirect("accounts:followers")

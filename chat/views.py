@@ -25,24 +25,25 @@ def home(request):
     comment_form = CommentForm()
     user_profile = UserProfile.objects.get(user=request.user)
     send_analytics_payload({
-        "_type": "homepage_viewed",
-        "_dt": datetime.now(),
-        "_source": "soMedia.web_backend",
-        "_uuid": uuid.uuid4(),
-        "_version": "0.3.0",
-        "device_id": get_device_id(user_profile),
-        "session_id": get_session_property(request, "session_id"),
-        "ip_address": request.get_host(),
-        "path": request.get_full_path(),
-        "is_secure": request.is_secure(),
-        "is_mobile": is_mobile(request),
-        "language": "en-us",
-        "username": user_profile.user.username,
-        "user_website": user_profile.website,
-        "user_bio": user_profile.bio,
-        "user_phone": user_profile.phone,
-        "user_address": user_profile.address,
-    })
+        "tracks": [{
+            "_type": "homepage_viewed",
+            "_dt": datetime.now(),
+            "_source": "soMedia.web_backend",
+            "_uuid": uuid.uuid4(),
+            "_version": "0.3.0",
+            "device_id": get_device_id(user_profile),
+            "session_id": get_session_property(request, "session_id"),
+            "ip_address": request.get_host(),
+            "path": request.get_full_path(),
+            "is_secure": request.is_secure(),
+            "is_mobile": is_mobile(request),
+            "language": "en-us",
+            "username": user_profile.user.username,
+            "user_website": user_profile.website,
+            "user_bio": user_profile.bio,
+            "user_phone": user_profile.phone,
+            "user_address": user_profile.address,
+    }]})
     return render(
         request, "chat/home.html", {"posts": posts, "comment_form": comment_form}
     )
@@ -65,24 +66,25 @@ def add_post(request):
             post.save()
             user_profile = UserProfile.objects.get(user=request.user)
             send_analytics_payload({
-                "_type": "add_post",
-                "_dt": datetime.now(),
-                "_source": "soMedia.web_backend",
-                "_uuid": uuid.uuid4(),
-                "_version": "0.3.0",
-                "device_id": get_device_id(user_profile),
-                "session_id": get_session_property(request, "session_id"),
-                "ip_address": request.get_host(),
-                "path": request.get_full_path(),
-                "is_secure": request.is_secure(),
-                "is_mobile": is_mobile(request),
-                "language": "en-us",
-                "username": user_profile.user.username,
-                "user_website": user_profile.website,
-                "user_bio": user_profile.bio,
-                "user_phone": user_profile.phone,
-                "user_address": user_profile.address,
-            })
+                "tracks": [{
+                    "_type": "add_post",
+                    "_dt": datetime.now(),
+                    "_source": "soMedia.web_backend",
+                    "_uuid": uuid.uuid4(),
+                    "_version": "0.3.0",
+                    "device_id": get_device_id(user_profile),
+                    "session_id": get_session_property(request, "session_id"),
+                    "ip_address": request.get_host(),
+                    "path": request.get_full_path(),
+                    "is_secure": request.is_secure(),
+                    "is_mobile": is_mobile(request),
+                    "language": "en-us",
+                    "username": user_profile.user.username,
+                    "user_website": user_profile.website,
+                    "user_bio": user_profile.bio,
+                    "user_phone": user_profile.phone,
+                    "user_address": user_profile.address,
+            }]})
             return redirect("chat:home")
     else:
         form = PostForm()
@@ -101,22 +103,23 @@ def add_comment(request, post_id):
         comment = form.save(Post.objects.get(id=post_id), request.user)
         user_profile = UserProfile.objects.get(user=request.user)
         send_analytics_payload({
-            "_type": "add_comment",
-            "_dt": datetime.now(),
-            "_source": "soMedia.web_backend",
-            "_uuid": uuid.uuid4(),
-            "_version": "0.3.0",
-            "device_id": get_device_id(user_profile),
-            "session_id": get_session_property(request, "session_id"),
-            "ip_address": request.get_host(),
-            "path": request.get_full_path(),
-            "is_secure": request.is_secure(),
-            "is_mobile": is_mobile(request),
-            "language": "en-us",
-            "username": user_profile.user.username,
-            "user_website": user_profile.website,
-            "user_bio": user_profile.bio,
-            "user_phone": user_profile.phone,
-            "user_address": user_profile.address,
-        })
+            "tracks": [{
+                "_type": "add_comment",
+                "_dt": datetime.now(),
+                "_source": "soMedia.web_backend",
+                "_uuid": uuid.uuid4(),
+                "_version": "0.3.0",
+                "device_id": get_device_id(user_profile),
+                "session_id": get_session_property(request, "session_id"),
+                "ip_address": request.get_host(),
+                "path": request.get_full_path(),
+                "is_secure": request.is_secure(),
+                "is_mobile": is_mobile(request),
+                "language": "en-us",
+                "username": user_profile.user.username,
+                "user_website": user_profile.website,
+                "user_bio": user_profile.bio,
+                "user_phone": user_profile.phone,
+                "user_address": user_profile.address,
+        }]})
     return redirect(reverse("chat:home"))
