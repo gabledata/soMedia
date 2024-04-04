@@ -1,6 +1,4 @@
-from django.contrib import admin
-
-from .models import Comment, Post
-
-admin.site.register(Comment)
-admin.site.register(Post)
+from django.contrib import admin as A
+from.models import Comment as B,Post
+A.site.register(B)
+A.site.register(Post)

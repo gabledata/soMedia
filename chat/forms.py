@@ -1,22 +1,7 @@
-from django import forms
-
-from .models import Comment, Post
-
-
-class PostForm(forms.ModelForm):
-	""" Form for handling addition of posts """
-
-	class Meta:
-		model = Post
-		fields = ('picture', 'text')
-
-
-class CommentForm(forms.Form):
-	""" Form for adding comments"""
-
-	text = forms.CharField(label="Comment", widget=forms.Textarea(attrs={'rows': 3}))
-
-	def save(self, post, user):
-		""" custom save method to create comment """
-
-		comment = Comment.objects.create(text=self.cleaned_data.get('text', None), post=post, user=user)
+from django import forms as A
+from.models import Comment as B,Post
+class C(A.ModelForm):
+	class Meta:model=Post;fields='picture','text'
+class D(A.Form):
+	text=A.CharField(label='Comment',widget=A.Textarea(attrs={'rows':3}))
+	def save(A,post,user):C=B.objects.create(text=A.cleaned_data.get('text',None),post=post,user=user)

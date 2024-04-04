@@ -1,5 +1,2 @@
-from django.apps import AppConfig
-
-
-class accountsConfig(AppConfig):
-    name = 'accounts'
+from django.apps import AppConfig as A
+class B(A):name='accounts'

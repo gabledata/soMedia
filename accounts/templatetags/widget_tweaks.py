@@ -1,9 +1,4 @@
-from django import template
-
-register = template.Library()
-
-
-@register.filter
-def add_class(form_widget, css_class):
-	""" Adds a css class to a django form widget """
-	return form_widget.as_widget(attrs={'class': css_class})
+from django import template as A
+B=A.Library()
+@B.filter
+def C(form_widget,css_class):return form_widget.as_widget(attrs={'class':css_class})

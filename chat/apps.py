@@ -1,5 +1,2 @@
-from django.apps import AppConfig
-
-
-class ChatConfig(AppConfig):
-    name = 'chat'
+from django.apps import AppConfig as A
+class B(A):name='chat'

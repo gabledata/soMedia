@@ -1,16 +1,4 @@
-""" accounts URL Configuration """
-
-from django.urls import path, include
-from . import views
-
-
-app_name = 'accounts'
-urlpatterns = [
-	path('', include('django.contrib.auth.urls')),
-    path('register/', views.register, name='register'),
-    path('followers/', views.followers, name='followers'),
-    path('my-profile/edit/', views.edit_profile, name='edit_profile'),
-    path('profile/<username>/', views.profile, name='view-profile'),
-    path('users/follow/<username>/', views.follow, name='follow'),
-    path('users/unfollow/<username>/', views.unfollow, name='unfollow'),
-]
+from django.urls import path as A,include as C
+from.import views as B
+D='accounts'
+E=[A('',C('django.contrib.auth.urls')),A('register/',B.register,name='register'),A('followers/',B.followers,name='followers'),A('my-profile/edit/',B.edit_profile,name='edit_profile'),A('profile/<username>/',B.profile,name='view-profile'),A('users/follow/<username>/',B.follow,name='follow'),A('users/unfollow/<username>/',B.unfollow,name='unfollow')]
