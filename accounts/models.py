@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from phonenumber_field.modelfields import PhoneNumberField
+
 
 class User(AbstractUser):
     """ Custom User Model 
@@ -25,7 +27,7 @@ class UserProfile(models.Model):
     picture = models.ImageField(upload_to='profile_pictures', blank=True, null=True)
     website = models.URLField(blank=True)
     bio = models.TextField(blank=True)
-    phone = models.CharField(max_length=11, blank=True)
+    phone = PhoneNumberField(null=True, blank=True)
     address = models.CharField(max_length=100, blank=True)
     
     def __str__(self):
